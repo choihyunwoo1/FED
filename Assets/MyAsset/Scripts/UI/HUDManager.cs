@@ -9,15 +9,11 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dayText;
     [SerializeField] private TextMeshProUGUI timeText;
 
-    // 🚨 [Header("Money")]와 관련된 변수(currentMoney)는 과감히 삭제!
-
-    [Header("Time Settings")]
-    private float timer = 0f;
-    private float timePerTick = 1f;
-    private int currentDay = 1;
-
-    private int currentHour = 0;
-    private int currentMinute = 0;
+    // 💡 새로 추가! (통제할 버튼 3인방)
+    [Header("Time Control Buttons")]
+    public GameObject startTradingBtn; // Start 버튼
+    public GameObject endTradingBtn;   // End 버튼
+    public GameObject nextDayBtn;      // Next 버튼
 
     private void Awake()
     {
@@ -26,61 +22,62 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateTimeUI(currentHour, currentMinute);
-        UpdateDayUI(currentDay);
-
-        // 💡 [핵심] PlayerManager가 켜져 있다면, 돈 변경 신호에 전광판을 연결합니다!
         if (PlayerManager.Instance != null)
         {
             PlayerManager.Instance.OnMoneyChanged += UpdateAssetUI;
-
-            // 처음 시작할 때 현재 내 전 재산을 한 번 띄워줍니다.
             UpdateAssetUI(PlayerManager.Instance.money);
         }
-    }
 
-    private void Update()
-    {
-        timer = timer + Time.deltaTime;
-
-        if (timer >= timePerTick)
+        if (DayManager.Instance != null)
         {
-            timer = 0f;
-            currentMinute = currentMinute + 10;
-            StockManager.Instance.UpdateAllStocks();
-
-            if (currentMinute >= 60)
-            {
-                currentHour = currentHour + 1;
-                currentMinute = 0;
-            }
-
-            if (currentHour >= 24)
-            {
-                currentDay = currentDay + 1;
-                currentHour = 0;
-                UpdateDayUI(currentDay);
-            }
-
-            UpdateTimeUI(currentHour, currentMinute);
+            DayManager.Instance.OnTimeChanged += UpdateTimeUI;
+            UpdateTimeUI();
         }
     }
 
-    // 💡 PlayerManager에서 돈(long)을 넘겨주므로, 파라미터 타입을 long으로 맞춥니다.
     public void UpdateAssetUI(long currentMoney)
     {
         assetText.text = currentMoney.ToString("N0");
     }
 
-    public void UpdateDayUI(int currentDay)
+    public void UpdateTimeUI()
     {
-        dayText.text = "Day " + currentDay.ToString();
-    }
+        if (DayManager.Instance == null) return;
 
-    public void UpdateTimeUI(int currentHour, int currentMinute)
-    {
-        timeText.text = $"{currentHour:D2}:{currentMinute:D2}";
-    }
+        int day = DayManager.Instance.currentDay;
+        int hour = DayManager.Instance.currentHour;
+        int min = DayManager.Instance.currentMinute;
+        DayPhase phase = DayManager.Instance.currentPhase;
 
-    // 🚨 SpendMoney와 AddMoney 함수는 완전히 삭제! (PlayerManager가 대신 해줌)
+        dayText.text = "Day " + day.ToString();
+
+        // 💡 페이즈에 따라 글씨와 버튼을 동시에 통제합니다!
+        if (phase == DayPhase.Morning)
+        {
+            timeText.text = "아침 (개장 전)";
+
+            // 아침엔 '장 시작(Start)' 버튼만 켬!
+            if (startTradingBtn != null) startTradingBtn.SetActive(true);
+            if (endTradingBtn != null) endTradingBtn.SetActive(false);
+            if (nextDayBtn != null) nextDayBtn.SetActive(false);
+        }
+        else if (phase == DayPhase.Trading)
+        {
+            timeText.text = $"{hour:D2}:{min:D2}";
+
+            // 낮에는 '장 마감(End)' 버튼만 켬!
+            if (startTradingBtn != null) startTradingBtn.SetActive(false);
+            if (endTradingBtn != null) endTradingBtn.SetActive(true);
+            if (nextDayBtn != null) nextDayBtn.SetActive(false);
+        }
+        else if (phase == DayPhase.Evening)
+        {
+            timeText.text = "오후 (장 마감)";
+
+            // 밤에는 '다음 날(Next)' 버튼만 켬!
+            if (startTradingBtn != null) startTradingBtn.SetActive(false);
+            if (endTradingBtn != null) endTradingBtn.SetActive(false);
+            if (nextDayBtn != null) nextDayBtn.SetActive(true);
+        }
+    }
 }
