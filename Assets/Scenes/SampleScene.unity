@@ -832,6 +832,7 @@ Transform:
   - {fileID: 360150780}
   - {fileID: 1689303884}
   - {fileID: 1163207216}
+  - {fileID: 386301144}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &360150779
@@ -930,6 +931,97 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StockManager
   stockList: []
   currentStockIndex: 0
+--- !u!1 &386301143
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 386301144}
+  - component: {fileID: 386301145}
+  m_Layer: 0
+  m_Name: DateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &386301144
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386301143}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 353452375}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &386301145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386301143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f246b85a0ee9564cb7b744e2c05c4af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DateManager
+  npcList:
+  - npcName: Saturn
+    portrait: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    currentAffinity: 0
+    maxAffinity: 0
+    favoriteGiftName: "\uACE0\uAE09 \uC640\uC778"
+    giftAffinityUp: 0
+    normalDialogues:
+    - How are  U?
+    - Currency is important, aight?
+    rewardThreshold: 0
+    secretInfoText: Acompany is Wack!
+    hasGivenSecret: 0
+  - npcName: Two
+    portrait: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    currentAffinity: 0
+    maxAffinity: 0
+    favoriteGiftName: "\uACE0\uAE09 \uC640\uC778"
+    giftAffinityUp: 0
+    normalDialogues:
+    - He...
+    rewardThreshold: 0
+    secretInfoText: Acompany is Wack!
+    hasGivenSecret: 0
+  - npcName: 3
+    portrait: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    currentAffinity: 0
+    maxAffinity: 0
+    favoriteGiftName: "\uACE0\uAE09 \uC640\uC778"
+    giftAffinityUp: 0
+    normalDialogues:
+    - He...
+    rewardThreshold: 0
+    secretInfoText: Acompany is Wack!
+    hasGivenSecret: 0
+  - npcName: 4
+    portrait: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    currentAffinity: 0
+    maxAffinity: 0
+    favoriteGiftName: "\uACE0\uAE09 \uC640\uC778"
+    giftAffinityUp: 0
+    normalDialogues:
+    - He...
+    rewardThreshold: 0
+    secretInfoText: Acompany is Wack!
+    hasGivenSecret: 0
+  currentNpcIndex: 0
 --- !u!1 &422556917
 GameObject:
   m_ObjectHideFlags: 0
@@ -1184,6 +1276,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
   money: 1000000
+  itemDatabase:
+  - itemName: Love
+    affinityBonus: 50
+    price: 10000
+    itemIcon: {fileID: 0}
 --- !u!1 &504009313
 GameObject:
   m_ObjectHideFlags: 0
@@ -2146,7 +2243,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -736.12, y: 14.000044}
+  m_AnchoredPosition: {x: -736.12, y: 14.000061}
   m_SizeDelta: {x: 103.87, y: 100}
   m_Pivot: {x: 1, y: 0}
 --- !u!1 &910480922
@@ -2662,11 +2759,13 @@ MonoBehaviour:
       canOpenPortfolio: 0
       canOpenBriefing: 0
       canOpenGovernance: 1
+    triggerDelist: 1
+    delistStockName: "A\uC804\uC790"
     hasTriggered: 0
   - memo: NIEMI2
     targetDay: 2
     triggerCondition: 0
-    targetHour: 9
+    targetHour: 11
     targetMinute: 0
     targetPhase: 0
     triggerNews: 1
@@ -2675,14 +2774,16 @@ MonoBehaviour:
     cutscenePanelName: 
     storyImage: {fileID: 0}
     storyText: 
-    overridePermission: 1
+    overridePermission: 0
     phaseToOverride: 1
     newPermissions:
-      canOpenNetwork: 1
-      canOpenStockList: 0
-      canOpenPortfolio: 0
-      canOpenBriefing: 0
-      canOpenGovernance: 1
+      canOpenNetwork: 0
+      canOpenStockList: 1
+      canOpenPortfolio: 1
+      canOpenBriefing: 1
+      canOpenGovernance: 0
+    triggerDelist: 1
+    delistStockName: "\uB3C4\uC9C0\uCF54\uC778"
     hasTriggered: 0
 --- !u!1 &1232719100
 GameObject:

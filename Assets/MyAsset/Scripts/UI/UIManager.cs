@@ -79,4 +79,15 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+
+    // 💥 모든 패널 한 번에 닫기 (시간 이동, 강제 이벤트 등에서 사용!)
+    public void CloseAllPanels()
+    {
+        // 스택에 창이 남아있는 동안 계속해서 빼내고 끕니다.
+        while (panelStack.Count > 0)
+        {
+            GameObject panel = panelStack.Pop();
+            panel.SetActive(false);
+        }
+    }
 }

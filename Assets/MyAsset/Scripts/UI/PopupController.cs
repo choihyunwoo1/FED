@@ -37,7 +37,7 @@ public class PopupController : MonoBehaviour
 
         // 1. PlayerManager에게 "내 가방에서 이 주식 1개 빼줘!" 라고 요청합니다.
         // RemoveStock 함수가 참(true)을 반환하면 가방에 주식이 있어서 성공적으로 뺐다는 뜻입니다.
-        if (PlayerManager.Instance.RemoveStock(currentStock.stockName, 1))
+        if (PlayerManager.Instance.SellStock(currentStock.stockName, 1))
         {
             // 2. 가방에서 주식을 빼는 데 성공했으니, 현재가만큼 돈을 입금받습니다!
             PlayerManager.Instance.AddMoney(currentPrice);

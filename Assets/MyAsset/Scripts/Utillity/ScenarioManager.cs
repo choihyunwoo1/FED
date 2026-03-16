@@ -38,6 +38,10 @@ public class ScheduledEvent
     public DayPhase phaseToOverride;
     public PhasePermissions newPermissions;
 
+    [Header("🔥 4. 상장폐지 이벤트")]
+    public bool triggerDelist = false;   // 상장폐지를 터뜨릴 것인가?
+    public string delistStockName;       // 상장폐지 시킬 주식 이름 (예: "도지코인")
+
     [HideInInspector]
     public bool hasTriggered = false;
 }
@@ -127,6 +131,13 @@ public class ScenarioManager : MonoBehaviour
                 DayManager.Instance.eveningPerms = evt.newPermissions;
 
             Debug.Log($"🔒 [{evt.phaseToOverride}] 시간대의 권한이 시나리오에 의해 강제 변경되었습니다!");
+        }
+
+        // 🔥 4. 상장폐지 강제 집행!
+        if (evt.triggerDelist && StockManager.Instance != null)
+        {
+            // StockManager에게 해당 주식을 날려버리라고 명령합니다.
+            StockManager.Instance.DelistStock(evt.delistStockName);
         }
     }
 }

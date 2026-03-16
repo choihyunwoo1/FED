@@ -7,6 +7,9 @@ public class PortfolioUI : MonoBehaviour
     public GameObject itemPrefab;      // 1단계에서 만든 'PortfolioItemPrefab'
     public Transform contentTransform; // 목록들이 들어갈 부모 객체 (보통 Scroll View의 Content)
 
+    // 💡 [디테일 2] "보유 주식이 없습니다" 텍스트
+    public GameObject emptyStateMessage;
+
     // 💡 창이 켜질 때: 신호 연결(구독) 및 즉시 새로고침
     private void OnEnable()
     {
@@ -32,7 +35,15 @@ public class PortfolioUI : MonoBehaviour
     {
         foreach (Transform child in contentTransform) Destroy(child.gameObject);
 
-        if (PlayerManager.Instance == null || PlayerManager.Instance.portfolio.Count == 0) return;
+        if (PlayerManager.Instance == null || PlayerManager.Instance.portfolio.Count == 0)
+        {
+            // 빈 화면 안내 문구 켜기
+            if (emptyStateMessage != null) emptyStateMessage.SetActive(true);
+            return; // 여기서 함수 종료
+        }
+
+        // 가방에 주식이 있다면 안내 문구 끄기
+        if (emptyStateMessage != null) emptyStateMessage.SetActive(false);
 
         foreach (KeyValuePair<string, OwnedStock> item in PlayerManager.Instance.portfolio)
         {
@@ -55,4 +66,5 @@ public class PortfolioUI : MonoBehaviour
             uiItem.Setup(stockName, stockAmount, avgPrice, currentPrice);
         }
     }
+
 }

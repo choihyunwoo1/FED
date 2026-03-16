@@ -84,6 +84,8 @@ public class DayManager : MonoBehaviour
     // [장 시작] 버튼을 누르면 호출!
     public void StartTrading()
     {
+        if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
+
         currentPhase = DayPhase.Trading;
         isTimeFlowing = true;
         SetTime(9, 0); // 9시로 강제 세팅
@@ -93,6 +95,8 @@ public class DayManager : MonoBehaviour
     // 시간 다 되거나 강제로 [장 마감] 할 때 호출!
     public void EndTrading()
     {
+        if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
+
         currentPhase = DayPhase.Evening;
         isTimeFlowing = false;
         if (NewsManager.Instance != null) NewsManager.Instance.isMarketOpen = false; // 찌라시 정지
@@ -102,6 +106,8 @@ public class DayManager : MonoBehaviour
     // [다음 날로 가기(취침)] 버튼을 누르면 호출!
     public void NextDay()
     {
+        if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
+        
         currentDay++;
         currentPhase = DayPhase.Morning;
         isTimeFlowing = false;
