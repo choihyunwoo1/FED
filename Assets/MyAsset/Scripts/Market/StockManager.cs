@@ -25,6 +25,7 @@ public class StockManager : MonoBehaviour
 
         // ① 우량주 (변동성 2% - 아주 안전함)
         Stock stock1 = new Stock { stockName = "A전자", currentPrice = 50000, volatility = 0.02f };
+        // 💡 이렇게 뒤에 previousPrice를 currentPrice랑 똑같이 적어주면 시작할 때 에러가 안 납니다!
         // ② 건설주 (변동성 5% - 보통)
         Stock stock2 = new Stock { stockName = "B건설", currentPrice = 15000, volatility = 0.05f };
         // ③ 바이오주 (변동성 10% - 위험함)
@@ -41,6 +42,15 @@ public class StockManager : MonoBehaviour
         for (int i = 0; i < 144; i++)
         {
             UpdateAllStocks();
+        }
+
+        // 💡 3. 144번의 변동이 다 끝난 '최종 가격'을 기준으로, 
+        // 1일 차 아침의 전일대비 기준점과 고가/저가를 깔끔하게 0점 세팅해 줍니다!
+        foreach (Stock stock in stockList)
+        {
+            stock.previousPrice = stock.currentPrice;
+            stock.todayHigh = stock.currentPrice;
+            stock.todayLow = stock.currentPrice;
         }
     }
 
@@ -63,14 +73,12 @@ public class StockManager : MonoBehaviour
             OnStockDataUpdated.Invoke();
         }
     }
-
     private void GenerateCandleForStock(Stock stock)
     {
         int openPrice = stock.currentPrice;
         float randomPercent = UnityEngine.Random.Range(-stock.volatility, stock.volatility);
         int closePrice = openPrice + Mathf.RoundToInt(openPrice * randomPercent);
 
-        // 🛡️ [방어막 1] 종가가 아무리 떨어져도 10원 밑으로는 안 내려감! (상장폐지 방어)
         closePrice = Mathf.Max(10, closePrice);
 
         int maxPrice = Mathf.Max(openPrice, closePrice);
@@ -81,12 +89,28 @@ public class StockManager : MonoBehaviour
         int highPrice = maxPrice + randomShadow;
         int lowPrice = minPrice - randomShadow;
 
-        // 🛡️ [방어막 2] 차트 밑꼬리(최저가)도 10원 밑으로 뚫고 내려가지 않게 방어!
         lowPrice = Mathf.Max(10, lowPrice);
 
         Candle newCandle = new Candle(openPrice, closePrice, highPrice, lowPrice);
         stock.candleHistory.Add(newCandle);
+
+        // 1. 현재가를 방금 계산된 종가(closePrice)로 갱신합니다.
         stock.currentPrice = closePrice;
+
+        // 2. 📈 오늘 하루의 고가(High) 갱신!
+        // 방금 찍힌 캔들의 윗꼬리(highPrice)가 기존 오늘 고가보다 높으면 갈아치웁니다.
+        if (highPrice > stock.todayHigh)
+        {
+            stock.todayHigh = highPrice;
+        }
+
+        // 3. 📉 오늘 하루의 저가(Low) 갱신!
+        // 방금 찍힌 캔들의 밑꼬리(lowPrice)가 기존 오늘 저가보다 낮으면 갈아치웁니다.
+        // (단, todayLow가 0일 때는 비교하면 무조건 0이 이기므로 예외 처리 필수!)
+        if (stock.todayLow == 0 || lowPrice < stock.todayLow)
+        {
+            stock.todayLow = lowPrice;
+        }
     }
 
     public void DelistStock(string targetStockName)

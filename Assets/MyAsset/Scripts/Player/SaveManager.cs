@@ -1,5 +1,6 @@
-using UnityEngine;
+using System.Collections.Generic;
 using System.IO; // 💡 파일 입출력을 위해 꼭 필요합니다!
+using UnityEngine;
 
 public class SaveManager : MonoBehaviour
 {
@@ -60,6 +61,15 @@ public class SaveManager : MonoBehaviour
             }
         }
 
+        // 💡 6. 가계부 정보도 통에 담습니다!
+        if (PlayerManager.Instance != null)
+        {
+            data.weeklyEarned = PlayerManager.Instance.weeklyEarned;
+            data.weeklySpent = PlayerManager.Instance.weeklySpent;
+            // 리스트도 그대로 복사해서 담아줍니다!
+            data.weeklyHistory = new List<WeeklyRecord>(PlayerManager.Instance.weeklyHistory);
+        }
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(GetSaveFilePath(slotNumber), json);
         Debug.Log($"💾 {slotNumber}번 슬롯에 저장 완료!");
@@ -107,6 +117,14 @@ public class SaveManager : MonoBehaviour
                     DateManager.Instance.npcList[i].hasGivenSecret = data.npcRewardsGiven[i];
                 }
             }
+        }
+
+        // 💡 6. 가계부 정보를 게임에 다시 덮어씌웁니다!
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.weeklyEarned = data.weeklyEarned;
+            PlayerManager.Instance.weeklySpent = data.weeklySpent;
+            PlayerManager.Instance.weeklyHistory = new List<WeeklyRecord>(data.weeklyHistory);
         }
 
         Debug.Log($"📂 {slotNumber}번 슬롯 불러오기 완료!");

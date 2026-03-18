@@ -10,6 +10,9 @@ public class PortfolioUI : MonoBehaviour
     // 💡 [디테일 2] "보유 주식이 없습니다" 텍스트
     public GameObject emptyStateMessage;
 
+    [Header("가계부 팝업 연결")]
+    public GameObject popTotalPortfolioPanel;
+
     // 💡 창이 켜질 때: 신호 연결(구독) 및 즉시 새로고침
     private void OnEnable()
     {
@@ -64,6 +67,19 @@ public class PortfolioUI : MonoBehaviour
 
             // 프리팹에게 4가지 정보를 모두 던져줍니다!
             uiItem.Setup(stockName, stockAmount, avgPrice, currentPrice);
+        }
+    }
+
+    public void OnClickOpenTotalPortfolio()
+    {
+        if (popTotalPortfolioPanel != null)
+        {
+            // 비서(UIManager) 모르게 직접 창을 켭니다!
+            popTotalPortfolioPanel.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("❌ 가계부 패널이 연결되지 않았습니다!");
         }
     }
 

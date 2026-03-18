@@ -22,5 +22,10 @@ public class SaveData
     public List<int> npcAffinities = new List<int>();
     public List<bool> npcRewardsGiven = new List<bool>();
 
+    [Header("가계부 데이터")]
+    public long weeklyEarned;
+    public long weeklySpent;
+    public List<WeeklyRecord> weeklyHistory = new List<WeeklyRecord>();
+
     // TODO: 나중에 DayManager의 현재 날짜(Day) 변수도 여기에 추가하면 완벽합니다!
 }

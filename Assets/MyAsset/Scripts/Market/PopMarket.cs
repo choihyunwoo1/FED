@@ -11,6 +11,12 @@ public class PopMarket : MonoBehaviour
     public TextMeshProUGUI currentPriceText;
     public TextMeshProUGUI totalPriceText;
 
+    [Header("상단 정보판(Ticker) UI")]
+    public TextMeshProUGUI stockNameText;  // 첫번째 칸 (Buy라고 적힌 곳)
+    public TextMeshProUGUI changeRateText; // 두번째 칸 (전일대비)
+    public TextMeshProUGUI highLowText;    // 세번째 칸 (고가/저가)
+    public TextMeshProUGUI myInfoText;     // 네번째 칸 (내 보유량/수익률)
+
     [Header("디자인 설정 (선택)")]
     public Color buyPanelColor = new Color(0.8f, 0.2f, 0.2f, 1f);
     public Color sellPanelColor = new Color(0.2f, 0.7f, 0.2f, 1f);
@@ -57,6 +63,7 @@ public class PopMarket : MonoBehaviour
                 if (currentAmount > maxAmount) currentAmount = maxAmount;
 
                 UpdateTradeUI();
+                UpdateTickerUI();
             }
         }
     }
@@ -114,6 +121,7 @@ public class PopMarket : MonoBehaviour
 
         if (amountInputField != null) amountInputField.text = currentAmount.ToString();
         UpdateTradeUI();
+        UpdateTickerUI();
     }
 
     // ⌨️ 유저가 키보드로 입력하고 엔터를 치거나 클릭을 해제할 때 자동 실행됨!
@@ -200,6 +208,59 @@ public class PopMarket : MonoBehaviour
         }
 
         SetupTradePanel(isBuyMode);
+        UpdateTickerUI();
+    }
+
+    private void UpdateTickerUI()
+    {
+        if (currentStock == null) return;
+
+        // 1. 주식 이름 표시
+        if (stockNameText != null) stockNameText.text = currentStock.stockName;
+
+        // 2. 전일 대비 계산 (한국 주식 스타일: 상승=빨강, 하락=파랑)
+        // ⚠️ 주의: Stock 클래스에 previousPrice(전일 종가) 변수가 있어야 합니다!
+        int current = currentStock.currentPrice;
+        int previous = currentStock.previousPrice > 0 ? currentStock.previousPrice : current;
+
+        int change = current - previous;
+        float changePercent = previous > 0 ? ((float)change / previous) * 100f : 0f;
+
+        string colorTag = change > 0 ? "<color=red>" : (change < 0 ? "<color=blue>" : "<color=black>");
+        string sign = change > 0 ? "▲" : (change < 0 ? "▼" : "-");
+
+        if (changeRateText != null)
+        {
+            changeRateText.text = $"전일대비 {colorTag}{sign}\n {Mathf.Abs(change):N0}원 ({changePercent:+0.00;-0.00;0.00}%)</color>";
+        }
+
+        // 3. 당일 고가 / 저가
+        // ⚠️ 주의: Stock 클래스에 todayHigh, todayLow 변수가 있어야 합니다!
+        if (highLowText != null)
+        {
+            highLowText.text = $"고가: {currentStock.todayHigh:N0}\n저가: {currentStock.todayLow:N0}";
+        }
+
+        // 4. 내 보유 현황 & 수익률 (거래량 완벽 대체!)
+        if (myInfoText != null)
+        {
+            if (PlayerManager.Instance.portfolio.ContainsKey(currentStock.stockName))
+            {
+                OwnedStock myStock = PlayerManager.Instance.portfolio[currentStock.stockName];
+
+                int totalInvest = myStock.amount * myStock.averagePrice; // 총 매수금액
+                int currentValue = myStock.amount * current; // 현재 가치
+                int profit = currentValue - totalInvest; // 순수익
+                float profitRate = totalInvest > 0 ? ((float)profit / totalInvest) * 100f : 0f; // 수익률
+
+                string pColor = profit > 0 ? "<color=red>" : (profit < 0 ? "<color=blue>" : "<color=black>");
+                myInfoText.text = $"보유: {myStock.amount}주\n수익: {pColor}{profitRate:+0.00;-0.00;0.00}%</color>";
+            }
+            else
+            {
+                myInfoText.text = "보유: 0주\n수익: 0.00%";
+            }
+        }
     }
 
     public void OnClickCloseButton()

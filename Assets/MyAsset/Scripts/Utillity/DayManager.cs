@@ -97,6 +97,13 @@ public class DayManager : MonoBehaviour
     {
         if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
 
+        foreach (Stock stock in StockManager.Instance.stockList)
+        {
+            // 💡 [수정] 장이 마감되었으니, 지금 가격을 '어제 종가'로 확정 지어줍니다.
+            // (고가/저가는 저녁에 유저가 확인할 수 있게 초기화하지 않고 내버려 둡니다!)
+            stock.previousPrice = stock.currentPrice;
+        }
+
         currentPhase = DayPhase.Evening;
         isTimeFlowing = false;
         if (NewsManager.Instance != null) NewsManager.Instance.isMarketOpen = false; // 찌라시 정지
@@ -107,8 +114,24 @@ public class DayManager : MonoBehaviour
     public void NextDay()
     {
         if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
-        
+
+        // 💡 [추가] 아침에 눈을 떴을 때, 새로운 하루의 고가/저가 기록장을 리셋합니다!
+        foreach (Stock stock in StockManager.Instance.stockList)
+        {
+            stock.todayHigh = stock.currentPrice;
+            stock.todayLow = stock.currentPrice;
+        }
+
         currentDay++;
+
+        // 💡 8일, 15일, 22일... 즉 일주일이 지났을 때 찰칵!
+        if (currentDay % 7 == 1)
+        {
+            int finishedWeek = (currentDay - 1) / 7; // 예: 8일 차면 1주차 마감!
+            PlayerManager.Instance.SaveWeeklyRecord(finishedWeek);
+            Debug.Log($"📅 {finishedWeek}주차 가계부가 기록되고 리셋되었습니다!");
+        }
+
         currentPhase = DayPhase.Morning;
         isTimeFlowing = false;
         SetTime(8, 0); // 다시 다음날 아침 8시로
