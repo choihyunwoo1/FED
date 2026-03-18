@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class MainMenuUI : MonoBehaviour
 {
+    [Header("UI 패널 직접 연결")]
+    public GameObject popSaveLoadPanel;
+
     // 🔘 [네트워크] 버튼을 눌렀을 때
     public void OnClickNetworkButton()
     {
@@ -65,5 +68,35 @@ public class MainMenuUI : MonoBehaviour
 
         // 2. 권한이 있다면 UIManager(비서)에게 창을 열어달라고 명령!
         UIManager.Instance.OpenPanel("PopGovernance");
+    }
+
+    // 🏪 상점 버튼을 누르면 실행!
+    public void OnClickOpenShop()
+    {
+        if (UIManager.Instance != null)
+        {
+            // 비서에게 상점 창을 열라고 지시합니다.
+            UIManager.Instance.OpenPanel("PopShop");
+        }
+    }
+
+    // 세팅 버튼을 누르면 실행!
+    public void OnClickOpenSetting()
+    {
+        if (UIManager.Instance != null)
+        {
+            // 비서에게 상점 창을 열라고 지시합니다.
+            UIManager.Instance.OpenPanel("PopSetting");
+        }
+    }
+
+    // 💡 [세이브/로드 버튼]을 눌렀을 때
+    public void OnClickOpenSaveLoad()
+    {
+        if (popSaveLoadPanel != null)
+        {
+            // 비서(UIManager) 장부에 기록 안 남기고 그냥 눈앞에 띄우기만 함!
+            popSaveLoadPanel.SetActive(true);
+        }
     }
 }
