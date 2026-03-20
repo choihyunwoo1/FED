@@ -44,6 +44,12 @@ public class DayManager : MonoBehaviour
     {
         // 게임 시작 시 아침 8시로 세팅
         SetTime(8, 0);
+
+        // 💡 1일차 아침 게임 시작 직후에도 거버넌스 주사위를 한 번 굴려줍니다!
+        if (GovernanceManager.Instance != null)
+        {
+            GovernanceManager.Instance.DetermineDailyEvents();
+        }
     }
 
     private void Update()
@@ -115,6 +121,18 @@ public class DayManager : MonoBehaviour
     {
         if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
 
+        // 💡 [추가] 오늘이 설정해둔 마지막 날(예: 300일)이라면?
+        if (currentDay >= EndingManager.Instance.finalDay)
+        {
+            EndingManager.Instance.CheckLastDayEndings();
+            return; // 다음 날로 안 넘어가고 게임 끝!
+        }
+
+        // 💡새로운 퀘스트를 스폰하기 '직전'에, 어제 예약해둔 결과를 먼저 빵! 터트립니다.
+        GovernanceManager.Instance.ProcessPendingEvents();
+        // 오늘 새로운 퀘스트 스폰!
+        GovernanceManager.Instance.DetermineDailyEvents();
+
         // 💡 [추가] 아침에 눈을 떴을 때, 새로운 하루의 고가/저가 기록장을 리셋합니다!
         foreach (Stock stock in StockManager.Instance.stockList)
         {
@@ -163,5 +181,27 @@ public class DayManager : MonoBehaviour
 
             default: return true;
         }
+    }
+
+    // ==========================================
+    // 🚀 [디버그/테스트용] 엔딩 직전으로 타임워프!
+    // ==========================================
+    public void CheatWarpToEnding()
+    {
+        if (EndingManager.Instance == null) return;
+
+        // 1. 마지막 날의 바로 하루 전날로 세팅 (예: 300일이 끝이면 299일로)
+        currentDay = EndingManager.Instance.finalDay - 1;
+
+        // 2. 시간도 강제로 '저녁(장 마감)'으로 맞춰서 바로 [Next Day]를 누를 수 있게 해줍니다.
+        currentPhase = DayPhase.Evening;
+        currentHour = 18;
+        currentMinute = 0;
+        isTimeFlowing = false;
+
+        // 3. HUD 글씨 즉시 갱신!
+        OnTimeChanged?.Invoke();
+
+        Debug.Log($"🚀 [치트 발동] {currentDay}일차 저녁으로 워프했습니다! [Next Day]를 누르면 엔딩 판별이 시작됩니다.");
     }
 }

@@ -64,9 +64,13 @@ public class PlayerManager : MonoBehaviour
         UpdateMoneyUI();
     }
 
-    public void AddMoney(long amount)
+    public void AddMoney(long amount, bool isIncome = false)
     {
         money += amount;
+
+        // 로비 지원금이나 이벤트로 얻은 '순수 수익'일 때만 가계부에 기록!
+        if (isIncome) weeklyEarned += amount;
+
         UpdateMoneyUI();
     }
 
@@ -78,6 +82,13 @@ public class PlayerManager : MonoBehaviour
             money -= amount;
             // 상점 물건을 사거나 데이트를 한 '순수 지출'일 때만 가계부에 기록!
             if (isExpense) weeklySpent += amount;
+
+            // 돈이 깎였으니 HUD 화면도 새로고침 하라고 신호를 보냅니다!
+            UpdateMoneyUI();
+
+            // 💡 돈을 썼으니 파산했는지 매번 체크!
+            if (EndingManager.Instance != null) EndingManager.Instance.CheckInstantEndings();
+
             return true;
         }
         return false;
@@ -108,6 +119,8 @@ public class PlayerManager : MonoBehaviour
             // 처음 사는 주식이면 새 박스를 만들어서 넣습니다.
             portfolio.Add(stockName, new OwnedStock(amount, buyPrice));
         }
+
+        EndingManager.Instance.CheckInstantEndings();
 
         Debug.Log($"💼 [가방 업데이트] <{stockName}> {portfolio[stockName].amount}주 / 평단가: {portfolio[stockName].averagePrice:N0}원");
     }
@@ -181,24 +194,35 @@ public class PlayerManager : MonoBehaviour
     }
 
     // 💡 가방에 아이템 넣기/빼기 함수
-    public void AddItem(string itemName, int amount)
+    public void AddItem(string itemName, int amount = 1)
     {
-        if (inventory.ContainsKey(itemName)) inventory[itemName] += amount;
-        else inventory.Add(itemName, amount);
-        Debug.Log($"🎒 [가방] {itemName}을(를) {amount}개 획득! (총 {inventory[itemName]}개)");
+        if (inventory.ContainsKey(itemName))
+            inventory[itemName] += amount;
+        else
+            inventory.Add(itemName, amount);
+
+        Debug.Log($"🎒 가방에 [{itemName}] {amount}개가 들어왔습니다!");
     }
 
     public bool HasItem(string itemName, int amount = 1)
     {
-        return inventory.ContainsKey(itemName) && inventory[itemName] >= amount;
+        if (inventory.ContainsKey(itemName))
+        {
+            return inventory[itemName] >= amount;
+        }
+        return false;
     }
 
+    // 💡 3. 선물을 주거나 사용할 때 가방에서 빼는 함수
     public void RemoveItem(string itemName, int amount = 1)
     {
-        if (HasItem(itemName, amount))
+        if (inventory.ContainsKey(itemName) && inventory[itemName] >= amount)
         {
             inventory[itemName] -= amount;
-            if (inventory[itemName] <= 0) inventory.Remove(itemName); // 다 쓰면 가방에서 버림
+
+            // 다 썼으면 빈 껍데기는 가방에서 버리기!
+            if (inventory[itemName] <= 0)
+                inventory.Remove(itemName);
         }
     }
 
@@ -240,5 +264,26 @@ public class PlayerManager : MonoBehaviour
         // 사진 다 찍었으니 다음 주를 위해 실시간 수익/지출은 0으로 리셋!
         weeklyEarned = 0;
         weeklySpent = 0;
+    }
+
+    // ==========================================
+    // 💡 [진 엔딩용] 전 재산 사회 환원 (기부) 시스템
+    // ==========================================
+    public void DonateAllWealth()
+    {
+        // 1. 가진 돈을 0원으로 만듭니다.
+        long donatedMoney = money;
+        money = 0;
+
+        // (선택) 가계부에 '지출'로 기록하고 싶다면 주석 해제!
+        // weeklySpent += donatedMoney; 
+
+        // 2. 가진 주식도 모두 처분(기부)합니다.
+        portfolio.Clear();
+
+        // 3. UI 새로고침
+        UpdateMoneyUI();
+
+        Debug.Log($"🕊️ [무소유] 플레이어가 {donatedMoney:N0}원과 모든 주식을 기부했습니다...");
     }
 }

@@ -70,6 +70,30 @@ public class SaveManager : MonoBehaviour
             data.weeklyHistory = new List<WeeklyRecord>(PlayerManager.Instance.weeklyHistory);
         }
 
+        // 💡 7. 거버넌스 정보 저장
+        if (GovernanceManager.Instance != null)
+        {
+            data.globalPlayerInfluence = GovernanceManager.Instance.globalPlayerInfluence;
+
+            // 딕셔너리 분해해서 담기
+            foreach (var kvp in GovernanceManager.Instance.npcLikability)
+            {
+                data.govNpcNames.Add(kvp.Key);
+                data.govNpcLikabilities.Add(kvp.Value);
+            }
+
+            // 내일 터질 사건들(SO)을 '이름'만 추출해서 담기!
+            foreach (var pEvent in GovernanceManager.Instance.tomorrowEvents)
+            {
+                data.savedTomorrowEvents.Add(new SaveData.SavedPendingEvent
+                {
+                    npcName = pEvent.npc.npcName,
+                    questName = pEvent.quest.name, // 💡 파일 이름 저장
+                    isSuccess = pEvent.isSuccess
+                });
+            }
+        }
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(GetSaveFilePath(slotNumber), json);
         Debug.Log($"💾 {slotNumber}번 슬롯에 저장 완료!");
@@ -127,6 +151,41 @@ public class SaveManager : MonoBehaviour
             PlayerManager.Instance.weeklyHistory = new List<WeeklyRecord>(data.weeklyHistory);
         }
 
+        // 💡 7. 거버넌스 정보 복구
+        if (GovernanceManager.Instance != null)
+        {
+            GovernanceManager.Instance.globalPlayerInfluence = data.globalPlayerInfluence;
+
+            // 딕셔너리 조립
+            GovernanceManager.Instance.npcLikability.Clear();
+            for (int i = 0; i < data.govNpcNames.Count; i++)
+            {
+                GovernanceManager.Instance.npcLikability.Add(data.govNpcNames[i], data.govNpcLikabilities[i]);
+            }
+
+            // 내일 터질 사건들 원본 도감에서 찾아오기!
+            GovernanceManager.Instance.tomorrowEvents.Clear();
+            foreach (var savedEvt in data.savedTomorrowEvents)
+            {
+                // 도감에서 NPC 먼저 찾고 -> 그 NPC의 퀘스트 목록에서 퀘스트 찾기
+                NpcData foundNpc = GovernanceManager.Instance.allNpcDatabase.Find(x => x.npcName == savedEvt.npcName);
+                if (foundNpc != null)
+                {
+                    QuestData foundQuest = foundNpc.possibleQuests.Find(x => x.name == savedEvt.questName);
+
+                    if (foundQuest != null)
+                    {
+                        // 찾은 원본 데이터로 사건 수첩 완벽 복구!
+                        GovernanceManager.Instance.tomorrowEvents.Add(new GovernanceManager.PendingEvent
+                        {
+                            npc = foundNpc,
+                            quest = foundQuest,
+                            isSuccess = savedEvt.isSuccess
+                        });
+                    }
+                }
+            }
+        }
         Debug.Log($"📂 {slotNumber}번 슬롯 불러오기 완료!");
     }
 }

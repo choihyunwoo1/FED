@@ -27,5 +27,20 @@ public class SaveData
     public long weeklySpent;
     public List<WeeklyRecord> weeklyHistory = new List<WeeklyRecord>();
 
+    [Header("거버넌스 (로비/정치)")]
+    public int globalPlayerInfluence;
+    public List<string> govNpcNames = new List<string>();
+    public List<int> govNpcLikabilities = new List<int>();
+
+    // 💡 SO(스크립터블 오브젝트)는 직접 저장이 안 되므로, 이름만 저장할 특수 구조체!
+    [System.Serializable]
+    public class SavedPendingEvent
+    {
+        public string npcName;
+        public string questName; // 퀘스트 파일의 이름
+        public bool isSuccess;
+    }
+    public List<SavedPendingEvent> savedTomorrowEvents = new List<SavedPendingEvent>();
+
     // TODO: 나중에 DayManager의 현재 날짜(Day) 변수도 여기에 추가하면 완벽합니다!
 }

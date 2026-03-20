@@ -121,6 +121,7 @@ public class StockManager : MonoBehaviour
         if (stockList.Count > currentStockIndex && stockList[currentStockIndex].stockName == targetStockName)
         {
             // 차트 창을 강제로 닫아버립니다! (비서 호출)
+            PopMarket marketUI = FindAnyObjectByType<PopMarket>();
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.CloseCurrentPanel();

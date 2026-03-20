@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72aad7b80ba692d41acd81dd83affde0, type: 3}
+  m_Name: Eliite2
+  m_EditorClassIdentifier: Assembly-CSharp::NpcData
+  npcName: Elite2
+  npcImage: {fileID: 0}
+  faction: 1
+  possibleQuests:
+  - {fileID: 11400000, guid: 1289b3787cea24540b4e008ab6bbdacd, type: 2}
+  - {fileID: 11400000, guid: 8c92dd1ad0e167e44a63ebaff353468b, type: 2}
+  - {fileID: 11400000, guid: dabe964e207bcd543b419ff73342ce0f, type: 2}

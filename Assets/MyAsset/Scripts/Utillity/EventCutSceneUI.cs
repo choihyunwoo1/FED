@@ -1,6 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class EventCutSceneUI : MonoBehaviour
 {
@@ -21,5 +22,21 @@ public class EventCutSceneUI : MonoBehaviour
         }
 
         dialogueText.text = text;
+    }
+
+    public void OnClickClose()
+    {
+        // 💡 만약 현재 팝업이 '엔딩 팝업' 상태라면 창을 닫는 게 아니라 씬을 이동시킵니다!
+        if (EndingManager.Instance != null && EndingManager.Instance.isGameEnded)
+        {
+            // "CreditsScene" 이라는 이름의 다른 씬으로 넘어갑니다! 
+            // (File -> Build Settings에 씬이 등록되어 있어야 함)
+            SceneManager.LoadScene("CreditsScene");
+        }
+        else
+        {
+            // 엔딩이 아닐 땐 평소처럼 팝업만 닫기
+            UIManager.Instance.CloseCurrentPanel();
+        }
     }
 }
