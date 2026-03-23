@@ -1,74 +1,95 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class PopSlotList : MonoBehaviour
 {
     public static PopSlotList Instance;
 
-    public TextMeshProUGUI titleText; // 상단 제목 ("Save" 또는 "Load")
+    [Header("UI 연결")]
+    public TextMeshProUGUI titleText;
+    public List<SaveSlotUI> slotUIs;
 
-    // 💡 현재 이 창이 무슨 모드인지 기억하는 변수! (true면 세이브, false면 로드)
     private bool isSaveMode = true;
 
     private void Awake()
     {
         Instance = this;
-        gameObject.SetActive(false);
     }
 
-    // 💡 [핵심] 아까 스샷의 Load / Save 버튼을 누를 때 이 함수를 부릅니다!
     public void OpenSlotList(bool saveMode)
     {
         isSaveMode = saveMode;
-        gameObject.SetActive(true);
+
+        // 🚨 수정 1: 혼자 켜지는 SetActive(true) 삭제! (이제 비서가 켜주니까요)
 
         if (isSaveMode)
             titleText.text = "어디에 저장하시겠습니까? (Save)";
         else
             titleText.text = "어떤 기록을 부르시겠습니까? (Load)";
 
-        // TODO: 여기서 슬롯 1, 2, 3의 텍스트를 갱신해줍니다. (예: "빈 슬롯" or "Day 15")
         RefreshSlots();
     }
 
     private void RefreshSlots()
     {
-        // (나중에 슬롯 UI 스크립트를 만들어서 세팅할 부분)
-        // 예: 1번 슬롯에 파일이 있으면 "데이터 있음", 없으면 "Empty" 글씨 쓰기
+        for (int i = 0; i < slotUIs.Count; i++)
+        {
+            if (slotUIs[i] != null) slotUIs[i].UpdateVisuals(i);
+        }
     }
 
-    // 💡 슬롯 1번 버튼을 눌렀을 때 실행될 함수!
     public void OnClickSlot(int slotNumber)
     {
         if (isSaveMode)
         {
-            // 💡 세이브 모드일 땐? ➔ 덮어쓸까요? 확인 팝업 띄우고 저장!
-            PopConfirm.Instance.ShowPopup($"{slotNumber}번 슬롯에 저장할까요?", () =>
+            PopConfirm.Instance.SetupMessage("저장 확인", $"{slotNumber}번 슬롯에 저장할까요?", () =>
             {
                 SaveManager.Instance.SaveGame(slotNumber);
-                RefreshSlots(); // 저장했으니 슬롯 글씨 새로고침!
+                RefreshSlots();
+
+                // 🚨 수정 2: 저장 성공 시 CurrentPanel 대신 AllPanels로 싹 닫기!
+                if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
+                else gameObject.SetActive(false);
             });
         }
         else
         {
-            // 💡 로드 모드일 땐? ➔ 데이터가 있는지 확인하고 불러오기!
             if (SaveManager.Instance.HasSaveData(slotNumber))
             {
-                PopConfirm.Instance.ShowPopup($"{slotNumber}번 슬롯을 불러올까요?", () =>
+                PopConfirm.Instance.SetupMessage("불러오기 확인", $"{slotNumber}번 슬롯을 불러올까요?", () =>
                 {
-                    SaveManager.Instance.LoadGame(slotNumber);
-                    gameObject.SetActive(false); // 다 불렀으니 창 닫기
+                    if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "TitleScene")
+                    {
+                        PlayerPrefs.SetInt("IsLoadGame", 1);
+                        PlayerPrefs.SetInt("LoadSlotNumber", slotNumber);
+
+                        if (SceneFader.Instance != null) SceneFader.Instance.FadeToScene("PlayScene");
+                    }
+                    else
+                    {
+                        SaveManager.Instance.LoadGame(slotNumber);
+
+                        // 🚨 수정 3: 로드 성공 시 CurrentPanel 대신 AllPanels로 싹 닫기!
+                        if (UIManager.Instance != null) UIManager.Instance.CloseAllPanels();
+                        else gameObject.SetActive(false);
+                    }
                 });
             }
             else
             {
-                Debug.LogWarning("빈 슬롯이라 불러올 수 없습니다!");
+                PopConfirm.Instance.SetupMessage("알림", "빈 슬롯이라 불러올 수 없습니다!", null);
             }
         }
     }
 
     public void OnClickClose()
     {
-        gameObject.SetActive(false);
+        // 취소(X버튼)할 때는 원래대로 이전 창(SaveLoad 창)으로 돌아가야 하므로 이건 그대로 둡니다!
+        if (UIManager.Instance != null) UIManager.Instance.CloseCurrentPanel();
+        else gameObject.SetActive(false);
     }
+
+    // 🚨 수정 4: 맨 아래 있던 OpenForSave(), OpenForLoad() 함수는 이제 PopSave.cs가 알아서 열어주므로 깔끔하게 지웠습니다!
 }

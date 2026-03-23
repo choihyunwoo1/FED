@@ -638,7 +638,7 @@ RectTransform:
   m_GameObject: {fileID: 4979898469896946056}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.58, y: 4.58, z: 4.58}
+  m_LocalScale: {x: 4.5799994, y: 4.5799994, z: 4.5799994}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2204424426383379154}
@@ -741,6 +741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef1e8c27ddd65f24fabc61e00fd74acd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopConfirm
+  titleText: {fileID: 5420168642624890941}
   messageText: {fileID: 5420168642624890941}
 --- !u!1 &5719908213656514573
 GameObject:

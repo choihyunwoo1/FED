@@ -22,6 +22,17 @@ public class UIManager : MonoBehaviour
     // 🚀 새로운 UI 패널 열기
     public void OpenPanel(string panelName)
     {
+        // 🚨 [스팸 클릭 방지 방어막]
+        // 열려고 하는 창이 이미 캐시에 존재하고, 현재 켜져있는(스택 맨 위) 창과 똑같다면 무시합니다!
+        if (panelCache.ContainsKey(panelName) && panelStack.Count > 0)
+        {
+            if (panelStack.Peek() == panelCache[panelName])
+            {
+                Debug.Log($"🛑 [{panelName}] 이미 켜져 있는 창이라 중복으로 열지 않습니다!");
+                return; // 함수를 여기서 바로 종료시켜버림!
+            }
+        }
+
         // 1. 현재 켜져 있는 창이 있다면 숨기기 (스택의 맨 위 확인)
         if (panelStack.Count > 0)
         {
@@ -39,12 +50,10 @@ public class UIManager : MonoBehaviour
         else
         {
             // 💡 캐시에 없다면 새로 불러와서 생성해야 합니다.
-            // 예시: Resources 폴더에서 불러오기
             GameObject prefab = Resources.Load<GameObject>(panelName);
             if (prefab != null)
             {
                 newPanel = Instantiate(prefab, popUpUI.transform, false); // 화면에 생성
-
                 panelCache.Add(panelName, newPanel);       // 다음을 위해 캐시에 저장
             }
             else

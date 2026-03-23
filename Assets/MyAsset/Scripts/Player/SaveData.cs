@@ -32,6 +32,12 @@ public class SaveData
     public List<string> govNpcNames = new List<string>();
     public List<int> govNpcLikabilities = new List<int>();
 
+    [Header("현재 날짜(Day)")]
+    public int currentDay;
+    public int currentHour;
+    public int currentMinute;
+    public DayPhase currentPhase;
+
     // 💡 SO(스크립터블 오브젝트)는 직접 저장이 안 되므로, 이름만 저장할 특수 구조체!
     [System.Serializable]
     public class SavedPendingEvent
@@ -41,6 +47,4 @@ public class SaveData
         public bool isSuccess;
     }
     public List<SavedPendingEvent> savedTomorrowEvents = new List<SavedPendingEvent>();
-
-    // TODO: 나중에 DayManager의 현재 날짜(Day) 변수도 여기에 추가하면 완벽합니다!
 }

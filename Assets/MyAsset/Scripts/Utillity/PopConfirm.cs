@@ -40,15 +40,12 @@ public class PopConfirm : MonoBehaviour
     {
         // 💡 확인을 누르면 저장해둔 행동을 실행하고 창을 닫음!
         if (onConfirmCallback != null) onConfirmCallback.Invoke();
-
-        // (UIManager를 통해 열렸다면 깔끔하게 UIManager로 닫는 것도 좋습니다!)
-        if (UIManager.Instance != null) UIManager.Instance.CloseCurrentPanel();
-        else gameObject.SetActive(false);
+        
+        gameObject.SetActive(false);
     }
 
     public void OnClickCancel()
     {
-        if (UIManager.Instance != null) UIManager.Instance.CloseCurrentPanel();
-        else gameObject.SetActive(false); // 취소하면 그냥 닫음
+        gameObject.SetActive(false); // 취소하면 그냥 닫음
     }
 }

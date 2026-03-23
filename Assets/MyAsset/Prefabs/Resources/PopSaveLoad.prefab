@@ -34,10 +34,10 @@ RectTransform:
   - {fileID: 1868338464266242372}
   m_Father: {fileID: 8418923337177455288}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 25.7235, y: -12.36565}
+  m_SizeDelta: {x: 51.447, y: 24.7313}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8213423158051578231
 CanvasRenderer:
@@ -123,7 +123,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8403226034603405823}
         m_TargetAssemblyTypeName: PopSave, Assembly-CSharp
-        m_MethodName: OnClickLoadMode
+        m_MethodName: OnClickLoadSelect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &9046157991066384301
 RectTransform:
   m_ObjectHideFlags: 0
@@ -163,7 +163,7 @@ RectTransform:
   m_GameObject: {fileID: 763310163868298368}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.58, y: 4.58, z: 4.58}
+  m_LocalScale: {x: 4.5799994, y: 4.5799994, z: 4.5799994}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5077062894739297495}
@@ -236,7 +236,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 100
+  m_SortingOrder: 50
   m_TargetDisplay: 0
 --- !u!114 &1889443645819394409
 MonoBehaviour:
@@ -579,7 +579,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.48}
+  m_AnchoredPosition: {x: 0, y: 0.48000002}
   m_SizeDelta: {x: 0, y: 0.96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8341970447850268863
@@ -716,10 +716,10 @@ RectTransform:
   - {fileID: 664541713495602816}
   m_Father: {fileID: 8418923337177455288}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 137.1705, y: -12.36565}
+  m_SizeDelta: {x: 51.447, y: 24.7313}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1641770602593287870
 CanvasRenderer:
@@ -805,7 +805,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8403226034603405823}
         m_TargetAssemblyTypeName: PopSave, Assembly-CSharp
-        m_MethodName: OnClickSaveMode
+        m_MethodName: OnClickSaveSelect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -851,7 +851,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -10.106, y: -8.2934}
+  m_AnchoredPosition: {x: -10.106003, y: -8.2934}
   m_SizeDelta: {x: 5.4679, y: 5.4679}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &258417397875088662

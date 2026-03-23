@@ -45,6 +45,13 @@ public class PlayerManager : MonoBehaviour
     public long weeklyEarned = 0; // 주식 익절, 이벤트 등으로 번 돈
     public long weeklySpent = 0;  // 상점 지출, 데이트 비용, 주식 손절 등 쓴 돈
 
+    [Header("Bank System (은행 장부)")]
+    public long bankDeposit = 0; // 예금 잔액
+    public long bankDebt = 0;    // 대출 잔액
+
+    // (선택) 신용 한도 (예: 최대 1억까지만 대출 가능)
+    public long maxLoanLimit = 100000000;
+
     // 🎒 가방 업그레이드! 이제 int(개수) 대신 OwnedStock(정보 박스)를 담습니다.
     public Dictionary<string, OwnedStock> portfolio = new Dictionary<string, OwnedStock>();
 
@@ -80,14 +87,9 @@ public class PlayerManager : MonoBehaviour
         if (money >= amount)
         {
             money -= amount;
-            // 상점 물건을 사거나 데이트를 한 '순수 지출'일 때만 가계부에 기록!
             if (isExpense) weeklySpent += amount;
 
-            // 돈이 깎였으니 HUD 화면도 새로고침 하라고 신호를 보냅니다!
             UpdateMoneyUI();
-
-            // 💡 돈을 썼으니 파산했는지 매번 체크!
-            if (EndingManager.Instance != null) EndingManager.Instance.CheckInstantEndings();
 
             return true;
         }
@@ -119,8 +121,6 @@ public class PlayerManager : MonoBehaviour
             // 처음 사는 주식이면 새 박스를 만들어서 넣습니다.
             portfolio.Add(stockName, new OwnedStock(amount, buyPrice));
         }
-
-        EndingManager.Instance.CheckInstantEndings();
 
         Debug.Log($"💼 [가방 업데이트] <{stockName}> {portfolio[stockName].amount}주 / 평단가: {portfolio[stockName].averagePrice:N0}원");
     }

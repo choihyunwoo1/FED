@@ -142,14 +142,53 @@ public class DayManager : MonoBehaviour
 
         currentDay++;
 
+        // 💡 [추가] 수금일 전날(예: 7일차, 14일차)에 미리 경고해주기!
+        if (currentDay % 7 == 0 && PlayerManager.Instance.bankDebt > 0)
+        {
+            Debug.LogWarning("🚨 [은행 알림] 내일은 대출 이자 납부일입니다! 현금을 넉넉히 준비하세요!");
+            // TODO: 나중에 화면에 빨간 글씨로 팝업 띄워주면 더 좋습니다!
+        }
+
         // 💡 8일, 15일, 22일... 즉 일주일이 지났을 때 찰칵!
         if (currentDay % 7 == 1)
         {
-            int finishedWeek = (currentDay - 1) / 7; // 예: 8일 차면 1주차 마감!
-            PlayerManager.Instance.SaveWeeklyRecord(finishedWeek);
-            Debug.Log($"📅 {finishedWeek}주차 가계부가 기록되고 리셋되었습니다!");
-        }
+            // ==========================================
+            // 🏦 [주간 은행 결산] 일주일에 한 번 이자 정산!
+            // ==========================================
+            if (PlayerManager.Instance != null)
+            {
+                // 1. 주간 예금 이자 (예: 주 1% = 0.01f)
+                if (PlayerManager.Instance.bankDeposit > 0)
+                {
+                    long depositInterest = (long)(PlayerManager.Instance.bankDeposit * 0.01f);
+                    PlayerManager.Instance.bankDeposit += depositInterest;
+                    Debug.Log($"🏦 [예금 이자] 일주일치 예금 이자 {depositInterest:N0}원이 입금되었습니다!");
+                }
 
+                // 2. 주간 대출 이자 (예: 주 5% = 0.05f) -> 꽤 무섭습니다!
+                if (PlayerManager.Instance.bankDebt > 0)
+                {
+                    long debtInterest = (long)(PlayerManager.Instance.bankDebt * 0.05f);
+                    PlayerManager.Instance.money -= debtInterest; // 현금 지갑에서 강제 인출!
+
+                    // 가계부의 '지출'에 대출 이자 내역을 추가 (유저가 쓴 돈이니까요!)
+                    PlayerManager.Instance.weeklySpent += debtInterest;
+
+                    Debug.Log($"💸 [대출 이자] 일주일치 대출 이자 {debtInterest:N0}원이 빠져나갔습니다!");
+                }
+
+                // 돈이 빠져나갔으니 화면 갱신을 위해 신호 한 번 보내줌
+                PlayerManager.Instance.AddMoney(0);
+            }
+
+            // 💡 8일, 15일, 22일... 즉 일주일이 지났을 때 찰칵!
+            if (currentDay % 7 == 1)
+            {
+                int finishedWeek = (currentDay - 1) / 7; // 예: 8일 차면 1주차 마감!
+                PlayerManager.Instance.SaveWeeklyRecord(finishedWeek);
+                Debug.Log($"📅 {finishedWeek}주차 가계부가 기록되고 리셋되었습니다!");
+            }
+        }
         currentPhase = DayPhase.Morning;
         isTimeFlowing = false;
         SetTime(8, 0); // 다시 다음날 아침 8시로
@@ -203,5 +242,10 @@ public class DayManager : MonoBehaviour
         OnTimeChanged?.Invoke();
 
         Debug.Log($"🚀 [치트 발동] {currentDay}일차 저녁으로 워프했습니다! [Next Day]를 누르면 엔딩 판별이 시작됩니다.");
+    }
+
+    public void ForceUpdateTimeUI()
+    {
+        OnTimeChanged?.Invoke(); // "시간 바뀌었으니 화면 다시 그려!" 라고 방송함
     }
 }
