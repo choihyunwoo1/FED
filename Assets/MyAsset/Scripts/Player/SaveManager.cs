@@ -55,6 +55,8 @@ public class SaveManager : MonoBehaviour
         }
 
         data.money = PlayerManager.Instance.money;
+        data.bankDeposit = PlayerManager.Instance.bankDeposit;
+        data.bankDebt = PlayerManager.Instance.bankDebt;
 
         foreach (var item in PlayerManager.Instance.inventory)
         {
@@ -138,6 +140,9 @@ public class SaveManager : MonoBehaviour
         }
 
         PlayerManager.Instance.money = data.money;
+        PlayerManager.Instance.bankDeposit = data.bankDeposit;
+        PlayerManager.Instance.bankDebt = data.bankDebt;
+
         PlayerManager.Instance.AddMoney(0);
 
         PlayerManager.Instance.inventory.Clear();

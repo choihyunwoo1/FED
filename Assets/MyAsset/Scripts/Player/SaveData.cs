@@ -26,6 +26,10 @@ public class SaveData
     public long weeklyEarned;
     public long weeklySpent;
     public List<WeeklyRecord> weeklyHistory = new List<WeeklyRecord>();
+    
+    [Header("은행 예금과 대출 데이터")]
+    public long bankDeposit = 0;
+    public long bankDebt = 0;
 
     [Header("거버넌스 (로비/정치)")]
     public int globalPlayerInfluence;
